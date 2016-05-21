@@ -1,0 +1,11 @@
+click==6.6
+dominate==2.2.0
+-e git+https://github.com/pallets/flask.git/@8011e1de28c82e5ab5c9727d10bcba997e8254ce#egg=Flask
+Flask-Bootstrap==3.3.5.7
+itsdangerous==0.24
+Jinja2==2.8
+MarkupSafe==0.23
+redis==2.10.5
+requests==2.10.0
+visitor==0.1.2
+Werkzeug==0.11.9

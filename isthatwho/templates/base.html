@@ -1,0 +1,87 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/fixes.html" as fixes %}
+{% import "bootstrap/utils.html" as util %}
+
+{% block html_attribs %} ng-app="isthatwho"{% endblock %}
+
+{% block title %}Is That Who I Think It Is?{% endblock %}
+
+{% block content %}
+<div class="jumbotron" ng-controller="SearchAndCompareController as $sac">
+    <div class="container">
+        <div class="page-header">
+            <h1>Is that who I think it is?</h1>
+            <p>Simple movie cast comparison because you're not sure if that is who you think it is.</p>
+        </div>
+
+        <div ng-if="$sac.ready" class="col-md-12" style="margin: 1em;">
+            <table class="table table-striped">
+                <thead class="bg-primary">
+                    <td>Actor</td>
+                    <td ng-repeat="id in $sac.ids">{a $sac.idsToMovies[id] a}</td>
+                </thead>
+                <tr ng-if="!$sac.hasResults">
+                    <td colspan="{a 1 + Object.keys($sac.idsToMovies).length  a}">
+                      No matches found across these movies
+                    </td>
+                </tr>
+                <tr ng-repeat="(actor, characters) in $sac.common">
+                    <td>{a actor a}</td>
+                    <td ng-repeat="id in $sac.ids">{a characters[id] a}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <form>
+
+                <div class="form-group">
+                    <span ng-click="$sac.addSearcher()" class="btn btn-info">Add another movie</span>
+                    <span ng-click="$sac.compare()" class="btn btn-success">Is that them?</span>
+                </div>
+
+                <div ng-repeat="$search in $sac.searchers" class="form-group-sm" style="margin: 10px;">
+                    <p>Selected: {a $search.selected.title a}</p>
+
+                    <div class="form-inline">
+
+                        <span ng-click="$sac.removeSearcher($index)" class="btn btn-danger btn-sm">Remove Movie</span>
+
+                        <input
+                          ng-model="$search.query"
+                          ng-change="$search.find()"
+                          type="text"
+                          ng-model-options="{'debounce': 300}"
+                          class="form-control"
+                          style="width: 70%"
+                        />
+
+                        <span class="btn btn-info btn-sm" ng-show="$search.matches.length" ng-click="$search.toggleShowMatches()">Show/Hide Matches</span>
+
+                    </div>
+
+                    <div class="col-md-12">
+                        <ul ng-if="$search.showMatches()" class="list-inline" style="margin: 10px 0;">
+                            <li ng-repeat="$match in $search.matches" ng-click="$search.selectMatch($match)">
+                               <span class="btn" ng-class="{'btn-info': $search.selected.id === $match.id, 'btn-default': $search.selected.id !== $match.id}" style="margin: 10px 0">{a $match.title a}</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script>
+        const SEARCH = "{{ url_for('search') }}";
+        const CASTS = "{{ url_for('compare') }}";
+    </script>
+{% endblock %}
